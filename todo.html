@@ -11,6 +11,7 @@
 <body>
     <div id="container"></div>
 
+    <script src="/helper.js"></script>
     <script>
         const TASK_CREATED = 'TASK_CREATED'
 
@@ -21,27 +22,27 @@
         // Task Component
 
         const Task = (task) =>
-            createElement('div', [
-                createElement('h4', [task.title])
+            Div([
+                H4([task.title])
             ]);
 
         // TaskList Component
 
         const TaskList = (tasks) =>
-            createElement('div', tasks.map(Task));
+            Div(tasks.map(Task));
 
         // NewTask Component
 
         const NewTask = (dispatch) => (newTask) =>
-            createElement('form', [
-                createElement('input', [newTask.title], { type: 'text', name: 'title' }),
-                createElement('button', ['Create'])
+            Form([
+                Input([newTask.title], { type: 'text', name: 'title' }),
+                Button(['Create'])
             ], { onsubmit: dispatchFormData(dispatch, TASK_CREATED) });
 
         // Todo Component
 
         const Todo = (dispatch) => (store) =>
-            createElement('div', [
+            Div([
                 NewTask((a, p) => dispatch(a, p, store))(store.newTask || {}),
                 TaskList(store.tasks)
             ]);
@@ -68,49 +69,6 @@
         }
 
         main(initialStore);
-
-        // ------------------------------------------------------------------
-        // helper methods
-        // ------------------------------------------------------------------
-
-        function dispatchFormData(dispatch, ...args) {
-            return (e) => {
-                dispatch.apply(this, args.concat(extractFormData(e.target.elements)));
-                e.preventDefault();
-            }
-        }
-
-        function extractFormData(elements) {
-            return Array.from(elements)
-                .filter(e => !!e.name)
-                .map(e => ({ [e.name]: e.value }))
-                .reduce((ac, e) => ({ ...ac, ...e }));
-        }
-
-        function render(content) {
-            const container = document.getElementById('container');
-            while (container.firstChild) {
-                container.removeChild(container.firstChild);
-            }
-            container.append(content);
-        }
-
-        function createElement(tagName, children, options) {
-            const el = document.createElement(tagName);
-            for (const prop in options) {
-                if (!options.hasOwnProperty(prop)) continue;
-                if (prop.toLowerCase().startsWith('on')) {
-                    el.addEventListener(prop.substr(2), options[prop]);
-                } else {
-                    el.setAttribute(prop, options[prop]);
-                }
-            }
-            children.forEach(c => {
-                if (typeof c === 'string') el.append(c);
-                else el.append(c);
-            });
-            return el;
-        }
     </script>
 </body>
 
