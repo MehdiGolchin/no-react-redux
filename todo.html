@@ -13,7 +13,8 @@
 
     <script src="/helper.js"></script>
     <script>
-        const TASK_CREATED = 'TASK_CREATED'
+        const TASK_CREATED = 'TASK_CREATED';
+        const TASK_REMOVED = 'TASK_REMOVED';
 
         const initialStore = {
             tasks: []
@@ -21,15 +22,16 @@
 
         // Task Component
 
-        const Task = (task) =>
+        const Task = (dispatch) => (task) =>
             Div([
-                H4([task.title])
+                H4([task.title]),
+                Button(['Remove'], { onclick: () => dispatch(TASK_REMOVED, task) })
             ]);
 
         // TaskList Component
 
-        const TaskList = (tasks) =>
-            Div(tasks.map(Task));
+        const TaskList = (dispatch) => (tasks) =>
+            Div(tasks.map(Task(dispatch)));
 
         // NewTask Component
 
@@ -44,15 +46,18 @@
         const Todo = (dispatch) => (store) =>
             Div([
                 NewTask(includeParams(dispatch, store))(),
-                TaskList(store.tasks)
+                TaskList(includeParams(dispatch, store))(store.tasks)
             ]);
 
         // Todo Actions Handler
 
-        TodoActions = (dispatch) => (action, payload, store) => {
+        TodoActions = (dispatch) => (action, payload, store, ...args) => {
             switch (action) {
                 case TASK_CREATED:
-                    dispatch({ tasks: [payload, ...store.tasks] });
+                    dispatch({ tasks: [...store.tasks, payload] });
+                    break;
+                case TASK_REMOVED:
+                    dispatch({ tasks: [ ...store.tasks.filter(e => e !== payload) ] });
                     break;
             }
         };
