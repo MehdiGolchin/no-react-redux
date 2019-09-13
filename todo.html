@@ -25,7 +25,7 @@
         const Task = (dispatch) => (task) =>
             Div([
                 H4([task.title]),
-                Button(['Remove'], { onclick: () => dispatch(TASK_REMOVED, task) })
+                Button(['Remove'], {}, dispatch, TASK_REMOVED, task)
             ]);
 
         // TaskList Component
@@ -36,7 +36,7 @@
         // NewTask Component
 
         const NewTask = (dispatch) => () =>
-            DispatchForm([
+            Form([
                 Input([], { type: 'text', name: 'title' }),
                 Button(['Create'])
             ], {}, dispatch, TASK_CREATED);

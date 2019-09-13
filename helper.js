@@ -1,12 +1,12 @@
 const Div = createElement('div');
-const Button = createElement('button');
+const HtmlButton = createElement('button');
 const Article = createElement('article');
 const Header = createElement('header');
 const Main = createElement('main');
 const Footer = createElement('footer');
 const H4 = createElement('h4');
-const Form = createElement('form');
 const Input = createElement('input');
+const HtmlForm = createElement('form');
 
 function includeParams(fn, ...args) {
     return function () {
@@ -14,8 +14,15 @@ function includeParams(fn, ...args) {
     }
 }
 
-function DispatchForm(children, options, dispatch, ...args) {
-    return Form(children, {
+function Button(children, options, dispatch, ...args) {
+    return HtmlButton(children, {
+        ...options,
+        onclick: () => dispatch.apply(this, args)
+    });
+}
+
+function Form(children, options, dispatch, ...args) {
+    return HtmlForm(children, {
         ...options,
         onsubmit: (e) => {
             dispatch.apply(this, args.concat(extractFormData(e.target.elements)));
