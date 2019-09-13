@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="container"></div>
+    <script>
+        const INCREASED = 'increase';
+        const DECREASED = 'decrease';
+
+        const SpinnerUI = (dispatch) => (val) => {
+            return createElement('div', [
+                createElement('button', ['+'], { onclick: dispatch.bind(this, INCREASED, val) }),
+                createElement('label', [val]),
+                createElement('button', ['-'], { onclick: dispatch.bind(this, DECREASED, val) })]
+            );
+        }
+
+        const SpinnerControl = (dispatch) => (action, val) => {
+            switch (action) {
+                case INCREASED:
+                    dispatch(++val);
+                    break;
+                case DECREASED:
+                    dispatch(--val);
+                    break;
+            }
+        }
+
+        const Spinner = (renderer) =>
+            SpinnerUI(SpinnerControl(renderer));
+
+        const Main = (val) => {
+            const spinner = Spinner(Main)(val);
+            render(spinner); // <-- side-effect
+        }
+
+        Main(1);
+
+        // ------------------------------------------------------------------
+        // helper methods
+        // ------------------------------------------------------------------
+        function render(content) {
+            const container = document.getElementById('container');
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+            container.append(content);
+        }
+
+        function createElement(tagName, children, options) {
+            const el = document.createElement(tagName);
+            for (const prop in options) {
+                if (!options.hasOwnProperty(prop)) continue;
+                if (prop.toLowerCase().startsWith('on')) {
+                    el.addEventListener(prop.substr(2), options[prop]);
+                }
+            }
+            children.forEach(c => {
+                if (typeof c === 'string') el.append(c);
+                else el.append(c);
+            });
+            return el;
+        }
+    </script>
+</body>
+
+</html>
