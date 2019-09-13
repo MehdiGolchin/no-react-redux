@@ -8,19 +8,20 @@ const H4 = createElement('h4');
 const Form = createElement('form');
 const Input = createElement('input');
 
-function dispatchFormData(dispatch, ...args) {
-    return (e) => {
-        dispatch.apply(this, args.concat(extractFormData(e.target.elements)));
-        e.preventDefault();
-    }
-}
+const DispatchForm = (children, options, dispatch, ...args) =>
+    Form(children, {
+        ...options,
+        onsubmit: (e) => {
+            dispatch.apply(this, args.concat(extractFormData(e.target.elements)));
+            e.preventDefault();
+        }
+    });
 
-function extractFormData(elements) {
-    return Array.from(elements)
+const extractFormData = (elements) =>
+    Array.from(elements)
         .filter(e => !!e.name)
         .map(e => ({ [e.name]: e.value }))
         .reduce((ac, e) => ({ ...ac, ...e }));
-}
 
 function render(content) {
     const container = document.getElementById('container');

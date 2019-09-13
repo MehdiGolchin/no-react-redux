@@ -34,10 +34,10 @@
         // NewTask Component
 
         const NewTask = (dispatch) => (newTask) =>
-            Form([
+            DispatchForm([
                 Input([newTask.title], { type: 'text', name: 'title' }),
                 Button(['Create'])
-            ], { onsubmit: dispatchFormData(dispatch, TASK_CREATED) });
+            ], {}, dispatch, TASK_CREATED);
 
         // Todo Component
 
