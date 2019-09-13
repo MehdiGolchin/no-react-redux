@@ -8,14 +8,21 @@ const H4 = createElement('h4');
 const Form = createElement('form');
 const Input = createElement('input');
 
-const DispatchForm = (children, options, dispatch, ...args) =>
-    Form(children, {
+function includeParams(fn, ...args) {
+    return function () {
+        fn.apply(this, Array.from(arguments).concat(args));
+    }
+}
+
+function DispatchForm(children, options, dispatch, ...args) {
+    return Form(children, {
         ...options,
         onsubmit: (e) => {
             dispatch.apply(this, args.concat(extractFormData(e.target.elements)));
             e.preventDefault();
         }
     });
+}
 
 const extractFormData = (elements) =>
     Array.from(elements)

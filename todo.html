@@ -33,9 +33,9 @@
 
         // NewTask Component
 
-        const NewTask = (dispatch) => (newTask) =>
+        const NewTask = (dispatch) => () =>
             DispatchForm([
-                Input([newTask.title], { type: 'text', name: 'title' }),
+                Input([], { type: 'text', name: 'title' }),
                 Button(['Create'])
             ], {}, dispatch, TASK_CREATED);
 
@@ -43,7 +43,7 @@
 
         const Todo = (dispatch) => (store) =>
             Div([
-                NewTask((a, p) => dispatch(a, p, store))(store.newTask || {}),
+                NewTask(includeParams(dispatch, store))(),
                 TaskList(store.tasks)
             ]);
 
