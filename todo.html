@@ -12,65 +12,78 @@
     <div id="container"></div>
 
     <script src="/helper.js"></script>
+    <script src="/todo.js"></script>
     <script>
-        const TASK_CREATED = 'TASK_CREATED';
-        const TASK_REMOVED = 'TASK_REMOVED';
+        const ROUTE_CHANGED = 'ROUTE_CHANGED';
+
+        const RouteChanged = (route, store) => ({
+            type: ROUTE_CHANGED,
+            route,
+            store
+        });
 
         const initialStore = {
+            route: 'todo',
             tasks: []
         };
 
-        // Task Component
-
-        const Task = (dispatch) => (task) =>
+        const AboutPage = () =>
             Div([
-                H4([task.title]),
-                Button(['Remove'], {}, dispatch, TASK_REMOVED, task)
+                'About page...'
             ]);
 
-        // TaskList Component
-
-        const TaskList = (dispatch) => (tasks) =>
-            Div(tasks.map(Task(dispatch)));
-
-        // NewTask Component
-
-        const NewTask = (dispatch) => () =>
-            Form([
-                Input([], { type: 'text', name: 'title' }),
-                Button(['Create'])
-            ], {}, dispatch, TASK_CREATED);
-
-        // Todo Component
-
-        const Todo = (dispatch) => (store) =>
-            Div([
-                NewTask(includeParams(dispatch, store))(),
-                TaskList(includeParams(dispatch, store))(store.tasks)
-            ]);
-
-        // Todo Actions Handler
-
-        TodoActions = (dispatch) => (action, payload, store, ...args) => {
-            switch (action) {
-                case TASK_CREATED:
-                    dispatch({ tasks: [...store.tasks, payload] });
+        const AppActions = (dispatch) => (event) => {
+            switch (event.type) {
+                case ROUTE_CHANGED:
+                    dispatch({ ...event.store, route: event.route });
                     break;
-                case TASK_REMOVED:
-                    dispatch({ tasks: [ ...store.tasks.filter(e => e !== payload) ] });
-                    break;
+                default:
+                    dispatch(event);
             }
         };
 
-        // Todo App
+        const Navigation = (dispatch) => (store) =>
+            Nav([
+                UL([
+                    LI([
+                        Link('Todos', '/todos', () => dispatch(RouteChanged('todo', store)))
+                    ]),
+                    LI([
+                        Link('About', '/about', () => dispatch(RouteChanged('about', store)))
+                    ])
+                ])
+            ]);
 
-        const TodoApp = (renderer) => Todo(TodoActions(renderer));
+        const Content = (dispatch) => (store) => {
+            switch (store.route) {
+                case 'todo':
+                    return Todo(TodoActions(dispatch))(store);
+                case 'about':
+                    return AboutPage();
+            }
+        };
+
+        const App = (dispatch) => (store) =>
+            Div([
+                Navigation(dispatch)(store),
+                Content(dispatch)(store)
+            ]);
 
         // Entrypoint
 
         const main = (store) => {
-            const tasksList = TodoApp(main)(store);
-            render(tasksList); // <-- side-effect
+            const container = document.getElementById('container');
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+
+            routeTo(store.route); // <-- side-effect
+            const app = App(AppActions(main))(store);
+            const el = render(app); // <-- side-effect
+
+            console.log(app);
+
+            container.append(el);
         }
 
         main(initialStore);

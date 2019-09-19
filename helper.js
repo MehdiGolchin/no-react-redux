@@ -6,6 +6,10 @@ const Main = createElement('main');
 const Footer = createElement('footer');
 const H4 = createElement('h4');
 const Input = createElement('input');
+const Nav = createElement('nav');
+const UL = createElement('ul');
+const LI = createElement('li');
+const A = createElement('a');
 const HtmlForm = createElement('form');
 
 function includeParams(fn, ...args) {
@@ -14,20 +18,31 @@ function includeParams(fn, ...args) {
     }
 }
 
-function Button(children, options, dispatch, ...args) {
-    return HtmlButton(children, {
+function Link(text, to, onClick, children = [], options = {}) {
+    return A([text, ...children], {
+        href: to,
+        onclick: (e) => {
+            onClick(e);
+            e.preventDefault();
+        },
         ...options,
-        onclick: () => dispatch.apply(this, args)
     });
 }
 
-function Form(children, options, dispatch, ...args) {
+function Button(children, onclick, options = {}) {
+    return HtmlButton(children, {
+        onclick,
+        ...options
+    });
+}
+
+function Form(children, onSubmit, options = {}) {
     return HtmlForm(children, {
-        ...options,
         onsubmit: (e) => {
-            dispatch.apply(this, args.concat(extractFormData(e.target.elements)));
             e.preventDefault();
-        }
+            onSubmit(extractFormData(e.target.elements), e);
+        },
+        ...options
     });
 }
 
@@ -37,29 +52,33 @@ const extractFormData = (elements) =>
         .map(e => ({ [e.name]: e.value }))
         .reduce((ac, e) => ({ ...ac, ...e }));
 
-function render(content) {
-    const container = document.getElementById('container');
-    while (container.firstChild) {
-        container.removeChild(container.firstChild);
+function render(element) {
+    const el = document.createElement(element.tagName);
+    for (const prop in element.options) {
+        if (!element.options.hasOwnProperty(prop)) continue;
+        if (prop.toLowerCase().startsWith('on')) {
+            el.addEventListener(prop.substr(2), element.options[prop]);
+        } else {
+            el.setAttribute(prop, element.options[prop]);
+        }
     }
-    container.append(content);
+    element.children.forEach(c => {
+        if (typeof c === 'string') el.append(c);
+        else el.append(render(c));
+    });
+    return el;
+}
+
+function routeTo(path) {
+    window.history.pushState(null, null, path);
 }
 
 function createElement(tagName) {
     return function (children, options) {
-        const el = document.createElement(tagName);
-        for (const prop in options) {
-            if (!options.hasOwnProperty(prop)) continue;
-            if (prop.toLowerCase().startsWith('on')) {
-                el.addEventListener(prop.substr(2), options[prop]);
-            } else {
-                el.setAttribute(prop, options[prop]);
-            }
-        }
-        children.forEach(c => {
-            if (typeof c === 'string') el.append(c);
-            else el.append(c);
-        });
-        return el;
+        return {
+            tagName,
+            children,
+            options
+        };
     };
 }
