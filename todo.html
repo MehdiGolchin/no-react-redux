@@ -72,17 +72,16 @@
         // Entrypoint
 
         const main = (store) => {
-            const container = document.getElementById('container');
-            while (container.firstChild) {
-                container.removeChild(container.firstChild);
-            }
-
             routeTo(store.route); // <-- side-effect
             const app = App(AppActions(main))(store);
             const el = render(app); // <-- side-effect
 
             console.log(app);
 
+            const container = document.getElementById('container');
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
             container.append(el);
         }
 

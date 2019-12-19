@@ -10,16 +10,17 @@
 
 <body>
     <div id="container"></div>
+    <script src="/helper.js"></script>
     <script>
         const INCREASED = 'increase';
         const DECREASED = 'decrease';
 
         const SpinnerUI = (dispatch) => (val) => {
-            return createElement('div', [
-                createElement('button', ['+'], { onclick: dispatch.bind(this, INCREASED, val) }),
-                createElement('label', [val]),
-                createElement('button', ['-'], { onclick: dispatch.bind(this, DECREASED, val) })]
-            );
+            return Div([
+                Button(['+'], { onclick: dispatch.bind(this, INCREASED, val) }),
+                Label([val]),
+                Button(['-'], { onclick: dispatch.bind(this, DECREASED, val) })
+            ]);
         }
 
         const SpinnerControl = (dispatch) => (action, val) => {
@@ -46,28 +47,28 @@
         // ------------------------------------------------------------------
         // helper methods
         // ------------------------------------------------------------------
-        function render(content) {
-            const container = document.getElementById('container');
-            while (container.firstChild) {
-                container.removeChild(container.firstChild);
-            }
-            container.append(content);
-        }
+        // function render(content) {
+        //     const container = document.getElementById('container');
+        //     while (container.firstChild) {
+        //         container.removeChild(container.firstChild);
+        //     }
+        //     container.append(content);
+        // }
 
-        function createElement(tagName, children, options) {
-            const el = document.createElement(tagName);
-            for (const prop in options) {
-                if (!options.hasOwnProperty(prop)) continue;
-                if (prop.toLowerCase().startsWith('on')) {
-                    el.addEventListener(prop.substr(2), options[prop]);
-                }
-            }
-            children.forEach(c => {
-                if (typeof c === 'string') el.append(c);
-                else el.append(c);
-            });
-            return el;
-        }
+        // function createElement(tagName, children, options) {
+        //     const el = document.createElement(tagName);
+        //     for (const prop in options) {
+        //         if (!options.hasOwnProperty(prop)) continue;
+        //         if (prop.toLowerCase().startsWith('on')) {
+        //             el.addEventListener(prop.substr(2), options[prop]);
+        //         }
+        //     }
+        //     children.forEach(c => {
+        //         if (typeof c === 'string') el.append(c);
+        //         else el.append(c);
+        //     });
+        //     return el;
+        // }
     </script>
 </body>
 

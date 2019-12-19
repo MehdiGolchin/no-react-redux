@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="container"></div>
+
+    <script src="/helper.js"></script>
+    <script src="/todo.js"></script>
+    <script>
+        const INIT = 'INIT';
+        const INCREASE = 'INCREASE';
+        const DECREASE = 'DECREASE';
+
+        const initialStore = {
+            value: 0
+        };
+
+        // function App(store) {
+
+        // }
+
+        const AppUI = ({ value }, dispatch) =>
+            Div([
+                Button(['+'], () => dispatch(INCREASE)),
+                Div([value.toString()]),
+                Button(['-'], () => dispatch(DECREASE)),
+            ]);
+
+        const App = VisualComponent((store, event) => {
+            switch (event) {
+                case INIT:
+                    return store;
+                case INCREASE:
+                    return ({ ...store, value: ++store.value });
+                case DECREASE:
+                    return ({ ...store, value: --store.value });
+                default:
+                    return store;
+            }
+        }, AppUI);
+
+        // Entrypoint
+
+        App(initialStore);
+    </script>
+</body>
+
+</html>

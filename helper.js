@@ -46,6 +46,27 @@ function Form(children, onSubmit, options = {}) {
     });
 }
 
+function VisualComponent(component, ui) {
+    return (store) => {
+        const dispatch = (e) => renderComponent(ui(component(store, e), dispatch))
+        renderComponent(ui(
+            component(store, INIT),
+            dispatch
+        ));
+    };
+}
+
+
+function renderComponent(component) {
+    const el = render(component); // <-- side-effect
+
+    const container = document.getElementById('container');
+    while (container.firstChild) {
+        container.removeChild(container.firstChild);
+    }
+    container.append(el);
+}
+
 const extractFormData = (elements) =>
     Array.from(elements)
         .filter(e => !!e.name)
